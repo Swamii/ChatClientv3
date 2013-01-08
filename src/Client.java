@@ -103,7 +103,7 @@ public class Client extends JFrame {
 				message = input.readLine();					//Läser in raden som kommer från server
 				System.out.println(message);
 				if(message.startsWith("MESSAGE:")){			//Servern skickar med en string specifikt för chatt
-					String mess = message.split(":")[1];	//Delar på meddelandet efter :
+					String mess = message.substring(message.indexOf(":") + 1);	//Delar på meddelandet efter :
 					showText("\n " + mess); 				//showText-metoden skickar upp meddelandet på chattfältet
 				}else if(message.startsWith("NEW USER:")){
 					String mess = message.split(":")[1];	
