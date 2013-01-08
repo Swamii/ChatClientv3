@@ -1,0 +1,17 @@
+bin/*
+local.properties
+.classpath
+.settings/
+.DS_Store
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Project files #
+/.idea/
+*.iml
+
+/out/
