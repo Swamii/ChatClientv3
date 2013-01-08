@@ -108,16 +108,18 @@ public class Client extends JFrame {
 				}else if(message.startsWith("NEW USER:")){
 					String mess = message.split(":")[1];	
 					showText("\n " + mess + " has started chatting!"); 
-					addNickList(mess);
 				}else if(message.startsWith("USER LEFT:")){
 					String mess = message.split(":")[1];
 					showText("\n" + mess + " has logged off.");
-					deleteNickList(mess);
 				}else if(message.startsWith("NICK:TAKEN")){
 					showText("\nNickname already taken, please choose another.");
 					uniqueNick = false;
 				}else if(message.startsWith("NICK:OK")){
 					uniqueNick = true;
+				}else if(message.startsWith("NICKLIST:")) {
+					nickName = message.substring(message.indexOf(":") +1);
+					String[] nickList = nickName.split(",");
+					addAllUsers(nickList);
 				}
 			
 			}catch(IOException notfound){
@@ -126,13 +128,11 @@ public class Client extends JFrame {
 		}while(!message.equals("END"));						//Om man skriver END så avslutas chatten
 	}
 	
-	public void addNickList(String nick){
-		
+	public void addAllUsers(String[] users){
+		for(int i = 0; i < users.length; i++)
+			System.out.println(i + " : " + users[i]);
 	}
 	
-	public void deleteNickList(String nick){
-		
-	}
 	
 	public void sendMessage(String message){
 			try{
