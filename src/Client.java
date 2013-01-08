@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -25,6 +26,7 @@ public class Client extends JFrame {
 	private String message;
 	private String ipAdress = "172.20.200.66";
 	private int portNmbr = 5000;
+	private DefaultListModel<String> users;
 	
 	private String nickName;
 	private boolean uniqueNick = false;
@@ -107,10 +109,12 @@ public class Client extends JFrame {
 					showText("\n " + mess); 				//showText-metoden skickar upp meddelandet på chattfältet
 				}else if(message.startsWith("NEW USER:")){
 					String mess = message.split(":")[1];	
-					showText("\n " + mess + " has started chatting!"); 
+					showText("\n " + mess + " has started chatting!");
+					users.addElement(mess);
 				}else if(message.startsWith("USER LEFT:")){
 					String mess = message.split(":")[1];
 					showText("\n" + mess + " has logged off.");
+					users.removeElement(mess);
 				}else if(message.startsWith("NICK:TAKEN")){
 					showText("\nNickname already taken, please choose another.");
 					uniqueNick = false;
@@ -128,9 +132,12 @@ public class Client extends JFrame {
 		}while(!message.equals("END"));						//Om man skriver END så avslutas chatten
 	}
 	
-	public void addAllUsers(String[] users){
-		for(int i = 0; i < users.length; i++)
-			System.out.println(i + " : " + users[i]);
+	public void addAllUsers(String[] userNames){
+		users = new DefaultListModel<String>();
+		for(int i = 0; i < userNames.length; i++) {
+			System.out.println(i + " : " + userNames[i]);
+			users.addElement(userNames[i]);
+		}
 	}
 	
 	
