@@ -108,9 +108,11 @@ public class Client extends JFrame {
 				}else if(message.startsWith("NEW USER:")){
 					String mess = message.split(":")[1];	
 					showText("\n " + mess + " has started chatting!"); 
+					addNickList(mess);
 				}else if(message.startsWith("USER LEFT:")){
 					String mess = message.split(":")[1];
 					showText("\n" + mess + " has logged off.");
+					deleteNickList(mess);
 				}else if(message.startsWith("NICK:TAKEN")){
 					showText("\nNickname already taken, please choose another.");
 					uniqueNick = false;
@@ -124,6 +126,13 @@ public class Client extends JFrame {
 		}while(!message.equals("END"));						//Om man skriver END så avslutas chatten
 	}
 	
+	public void addNickList(String nick){
+		
+	}
+	
+	public void deleteNickList(String nick){
+		
+	}
 	
 	public void sendMessage(String message){
 			try{
