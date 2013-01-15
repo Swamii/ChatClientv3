@@ -20,11 +20,12 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 public class Client extends JFrame {
+	private static final long serialVersionUID = 1L;
 	private BufferedWriter output;
 	private BufferedReader input;
 	private Socket socket;
 	private String message;
-	private String ipAdress = "172.20.200.66";
+	private String ipAdress = "localhost";
 	private int portNmbr = 5000;
 	private DefaultListModel<String> users;
 	
@@ -33,40 +34,15 @@ public class Client extends JFrame {
 	
 	private JTextField userText;
 	private JTextArea chatWindow;
+	
+	public static Client client;
 	   
 	public Client() {
 		
-		//Skapar en tempor�r GUI tills den riktiga �r klar
-		 super("TEMPORARY STUFF");
-	      userText = new JTextField();
-	      userText.addActionListener(
-	         new ActionListener(){
-	            public void actionPerformed(ActionEvent event){
-            		if (userText.getText().length() == 0) {
-            			return; }
-            		else {
-            			if (uniqueNick == false){
-            				sendNickname(userText.getText());
-            				userText.setText("");
-            			} else {
-            				sendMessage(userText.getText());
-            				userText.setText("");
-            			}
-            		}
-	            }
-	         }
-	      );
-	      add(userText, BorderLayout.NORTH);
-	      chatWindow = new JTextArea();
-	      add(new JScrollPane(chatWindow), BorderLayout.CENTER);
-	      setSize(300,400);
-	      setVisible(true);
-	      setDefaultCloseOperation(EXIT_ON_CLOSE);
+		client = this;
+		
 	}
 	
-	JTextField nickChoice = new JTextField();
-	JFrame chooseNickFrame = new JFrame();
-	JLabel plsChooseNick = new JLabel("Please choose a nickname");
 	public void startProgram() {
 		try {
 			connect(ipAdress, portNmbr);
@@ -77,11 +53,6 @@ public class Client extends JFrame {
 			System.err.println("Error: " + e.getMessage());
 			System.exit(1);
 		}
-		nickChooser();
-	}
-	
-	public void nickChooser() {
-		showText("Choose a nickname and press enter");
 	}
 	
 	public void connect(String address, int port)throws IOException{
