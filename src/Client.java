@@ -39,7 +39,7 @@ public class Client implements Runnable {
 		try {
 			connect(ipAdress, portNmbr);
 			sendNickname(nick);
-			//gui.showChat();
+			gui.enableChatting();
 			chatting();
 		} catch (UnknownHostException e) {
 			System.err.println("Unknown host exception: " + e.getMessage());
@@ -51,9 +51,6 @@ public class Client implements Runnable {
 		
 	}
 	
-	public void startProgram(String ipAdress, int portNmbr, String nick) {
-	}
-	
 	public void connect(String address, int port)throws IOException{
 		socket = new Socket(address, port);
 		input = new BufferedReader(new InputStreamReader(socket.getInputStream()) );
@@ -61,6 +58,9 @@ public class Client implements Runnable {
 		System.out.println("Streams are good to go!");
 	}
 	
+	/**
+	 * The chat-loop
+	 */
 	public void chatting(){
 		try{
 			do{
@@ -93,12 +93,17 @@ public class Client implements Runnable {
 		}
 	}
 	
-	public void addAllUsers(String[] userNames){
-		users = new DefaultListModel<String>();
+	public synchronized void addUser(String user) {
+		users.addElement(user);
+		gui.updateUsers(users);
+	}
+	
+	public synchronized void addAllUsers(String[] userNames){
 		for(int i = 0; i < userNames.length; i++) {
 			System.out.println(i + " : " + userNames[i]);
 			users.addElement(userNames[i]);
 		}
+		gui.updateUsers(users);
 	}
 	
 	

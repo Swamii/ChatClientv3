@@ -109,6 +109,10 @@ public class ConnectPopup extends JDialog {
 		setVisible(true);
 	}
 	
+	/**
+	 * This class handles the 'Connect' and 'Cancel' buttons.
+	 * It creates a client-thread.
+	 */
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("connect")) {

@@ -3,6 +3,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JMenu;
@@ -20,6 +21,9 @@ public class GUI extends JFrame {
 
 	private JTextField userText;
 	private JTextArea chatWindow;
+	JList<String> userList;
+	JScrollPane userWindow;
+	
 	private Client client;
 	private final int WIDTH = 640;
 	private final int HEIGHT = 480;
@@ -68,6 +72,7 @@ public class GUI extends JFrame {
 						}
 					}
 				});
+		userText.setEditable(false);
 		
 		chatWindow = new JTextArea();
 		chatWindow.setEditable(false);
@@ -76,8 +81,8 @@ public class GUI extends JFrame {
 		chatPanel.add(userText, BorderLayout.SOUTH);
 		chatPanel.add(new JScrollPane(chatWindow), BorderLayout.CENTER);
 		
-		JList<String> userList = new JList<String>();
-		JScrollPane userWindow = new JScrollPane(userList);
+		userList = new JList<String>();
+		userWindow = new JScrollPane(userList);
 		userWindow.setPreferredSize(new Dimension(150, 500));
 		
 		setLayout(new BorderLayout());
@@ -94,7 +99,23 @@ public class GUI extends JFrame {
 		
 	}
 	
+	public void updateUsers(final DefaultListModel<String> users) {
+		System.out.println("lala");
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				userList.setModel(users);
+				userWindow.revalidate();
+				userWindow.repaint();				
+			}
+		});
+	}
+	
+	public void enableChatting() {
+		userText.setEditable(true);
+	}
+	
 	public void addText(final String message){
+		System.out.println("lala");
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
 				chatWindow.append(message + "\n");				//append gör att det skrivs till efter nuvarande text
@@ -116,12 +137,4 @@ public class GUI extends JFrame {
 		new ConnectPopup(this);
 	}
 	
-	
-	public void showChat() {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-			}
-		});
-		
-	}
 }
