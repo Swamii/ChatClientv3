@@ -1,8 +1,5 @@
 
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -12,40 +9,38 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-public class Client extends JFrame {
-	private static final long serialVersionUID = 1L;
+public class Client implements Runnable {
 	private BufferedWriter output;
 	private BufferedReader input;
 	private Socket socket;
 	private String message;
-	private String ipAdress = "localhost";
-	private int portNmbr = 5000;
 	private DefaultListModel<String> users;
+	private String ipAdress;
+	private int portNmbr;
+	private String nick;
 	
-	private String nickName;
-	private boolean uniqueNick = false;
-	
-	private JTextField userText;
-	private JTextArea chatWindow;
-	
+	private GUI gui;
 	public static Client client;
 	   
-	public Client() {
+	public Client(String ipAdress, int portNmbr, String nick, GUI gui) {
 		
-		client = this;
+		users = new DefaultListModel<String>();
+		this.gui = gui;
+		this.ipAdress = ipAdress;
+		this.portNmbr = portNmbr;
+		this.nick = nick;
 		
 	}
-	
-	public void startProgram() {
+
+	@Override
+	public void run() {
 		try {
 			connect(ipAdress, portNmbr);
+			sendNickname(nick);
+			//gui.showChat();
+			chatting();
 		} catch (UnknownHostException e) {
 			System.err.println("Unknown host exception: " + e.getMessage());
 			System.exit(2);
@@ -53,6 +48,10 @@ public class Client extends JFrame {
 			System.err.println("Error: " + e.getMessage());
 			System.exit(1);
 		}
+		
+	}
+	
+	public void startProgram(String ipAdress, int portNmbr, String nick) {
 	}
 	
 	public void connect(String address, int port)throws IOException{
@@ -61,46 +60,37 @@ public class Client extends JFrame {
 		output = new BufferedWriter( new OutputStreamWriter(socket.getOutputStream()) );
 		System.out.println("Streams are good to go!");
 	}
-
-	public void showText(final String message){
-		SwingUtilities.invokeLater(new Runnable(){
-			public void run(){
-				chatWindow.append(message);				//append gör att det skrivs till efter nuvarande text
-			}
-		});
-	}
 	
 	public void chatting(){
-		do{
-			try{
+		try{
+			do{
 				message = input.readLine();					//Läser in raden som kommer från server
 				System.out.println(message);
 				if(message.startsWith("MESSAGE:")){			//Servern skickar med en string specifikt för chatt
 					String mess = message.substring(message.indexOf(":") + 1);	//Delar på meddelandet efter :
-					showText("\n " + mess); 				//showText-metoden skickar upp meddelandet på chattfältet
+					gui.addText(mess); 				//showText-metoden skickar upp meddelandet på chattfältet
 				}else if(message.startsWith("NEW USER:")){
 					String mess = message.split(":")[1];	
-					showText("\n " + mess + " has started chatting!");
+					gui.addText(mess + " has started chatting!");
 					users.addElement(mess);
 				}else if(message.startsWith("USER LEFT:")){
 					String mess = message.split(":")[1];
-					showText("\n" + mess + " has logged off.");
+					gui.addText(mess + " has logged off.");
 					users.removeElement(mess);
 				}else if(message.startsWith("NICK:TAKEN")){
-					showText("\nNickname already taken, please choose another.");
-					uniqueNick = false;
+					gui.addText("Nickname already taken, please choose another.");
+					gui.newNickPopup();
 				}else if(message.startsWith("NICK:OK")){
-					uniqueNick = true;
 				}else if(message.startsWith("NICKLIST:")) {
-					nickName = message.substring(message.indexOf(":") +1);
+					String nickName = message.substring(message.indexOf(":") +1);
 					String[] nickList = nickName.split(",");
 					addAllUsers(nickList);
 				}
-			
-			}catch(IOException notfound){
-				showText("\n Error on recieve..." );
-			}
-		}while(!message.equals("END"));						//Om man skriver END så avslutas chatten
+			}while(!message.equals("END"));						//Om man skriver END så avslutas chatten
+
+		}catch(IOException notfound){
+			gui.addText("Error on recieve..." );
+		}
 	}
 	
 	public void addAllUsers(String[] userNames){
@@ -117,7 +107,7 @@ public class Client extends JFrame {
 				output.write("MESSAGE:"+message+"\n");				//Skickar ett meddelande
 				output.flush();									//Spolar toaletten :)
 			}catch (IOException e){
-				chatWindow.append("\nCan't send message..."); 
+				gui.addText("Can't send message..."); 
 			}
 	}
 	
@@ -126,10 +116,10 @@ public class Client extends JFrame {
 			output.write("NICK:"+message+"\n");				//Skickar ett meddelande
 			output.flush();									//Spolar toaletten :)
 		}catch (IOException e){
-			chatWindow.append("\nCan't send nickname..."); 
+			gui.addText("Can't send nickname..."); 
 		}
-}
-	
+	}
+
 	public void close(){
 		try {
 			input.close();
