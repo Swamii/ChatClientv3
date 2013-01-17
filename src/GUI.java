@@ -100,7 +100,6 @@ public class GUI extends JFrame {
 	}
 	
 	public void updateUsers(final DefaultListModel<String> users) {
-		System.out.println("lala");
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				userList.setModel(users);
@@ -115,7 +114,6 @@ public class GUI extends JFrame {
 	}
 	
 	public void addText(final String message){
-		System.out.println("lala");
 		SwingUtilities.invokeLater(new Runnable(){
 			public void run(){
 				chatWindow.append(message + "\n");				//append gör att det skrivs till efter nuvarande text
